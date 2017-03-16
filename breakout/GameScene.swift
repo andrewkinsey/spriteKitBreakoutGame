@@ -16,6 +16,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var paddle: SKSpriteNode!
     var brick: SKSpriteNode!
     var gameOverNode: SKLabelNode!
+    var gameOverBackground: SKSpriteNode!
     var lives = 3
     
     override func didMove(to view: SKView)
@@ -40,6 +41,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             let location = touch.location(in: self)
             paddle.position.x = location.x
         }
+        
+        
+        
+        
+        
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?)
@@ -147,6 +153,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         ball.removeFromParent()
         makeGameOver()
+        makeGameOverBackground()
         makeBall()
         
     }
@@ -161,9 +168,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         gameOverNode = SKLabelNode(fontNamed: "ArielMT")
         gameOverNode.fontSize = 30
         gameOverNode.text = "Game Over"
-        
+        gameOverNode.zPosition = 15
+
         addChild(gameOverNode)
     }
     
+    func makeGameOverBackground()
+    {
+        let gameOverBackground = SKSpriteNode(color: UIColor.red, size: CGSize(width: frame.width, height: frame.height))
+        gameOverBackground.zPosition = 10
+        
+        addChild(gameOverBackground)
+    }
     
 }
