@@ -17,6 +17,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var brick: SKSpriteNode!
     var gameOverNode: SKLabelNode!
     var gameOverBackground: SKSpriteNode!
+    var starsBackground: SKSpriteNode!
     var lives = 3
     
     override func didMove(to view: SKView)
@@ -64,10 +65,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func didBegin(_ contact: SKPhysicsContact)
     {
-        if contact.bodyA.node?.name == "brick" || contact.bodyB.node?.name == "brick"
+        if contact.bodyA.node?.name == "brick"
         {
-            print("brick hit")
-            brick.removeFromParent()
+            removeChildren(in: nodes(at: (contact.bodyA.node?.position)!))
+            starsBackground.removeFromParent()
+            createBackground()
+        }
+        else if contact.bodyB.node?.name == "brick"
+        {
+            removeChildren(in: nodes(at: (contact.bodyB.node?.position)!))
+            //scotty & hussein
+            starsBackground.removeFromParent()
+            createBackground()
         }
         else if contact.bodyA.node?.name == "loseZone" || contact.bodyB.node?.name == "loseZone"
         {
@@ -87,7 +96,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         
         for i in 0...1
         {
-            let starsBackground = SKSpriteNode(texture: stars)
+            starsBackground = SKSpriteNode(texture: stars)
             starsBackground.zPosition = -1
             starsBackground.anchorPoint = CGPoint(x: 0.5, y: 0.5)
             starsBackground.position = CGPoint(x: 0, y: (starsBackground.size.height * CGFloat(i) - CGFloat(1 * i)))
@@ -179,11 +188,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func creatBlocks()
     {
-        var xPosition = -150
-        var yPosition = 150
-        
         let blockWidth = (Int)((frame.width - 60)/5)
         let blockHight = 20
+        
+        let blockEdge = blockWidth / 2
+        let screenEdge = Int(frame.midX - (frame.width / 2))
+        var xPosition = screenEdge + blockEdge + 10
+        var yPosition = 150
+        
+        
         
         for rows in 1...3
         {
@@ -192,7 +205,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                 makeBrick(xPoint: xPosition, yPoint: yPosition, brickWidth: blockWidth, brickHight: blockHight)
                 xPosition += (blockWidth + 10)
             }
-            xPosition = -150
+            xPosition = screenEdge + blockEdge + 10
             yPosition += (blockHight + 10)
         }
     }
