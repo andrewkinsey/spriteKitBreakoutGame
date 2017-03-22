@@ -19,6 +19,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var gameOverBackground: SKSpriteNode!
     var starsBackground: SKSpriteNode!
     var lives = 3
+    var blockCount = 0
     
     override func didMove(to view: SKView)
     {
@@ -29,7 +30,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         makeLoseZone()
         makeBall()
         creatBlocks()
-        ball.physicsBody?.applyImpulse(CGVector(dx: 4, dy: 4)) //puts ball into motion
+        
 
 
         
@@ -37,6 +38,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
     {
+        if blockCount == 15
+        {
+            ball.physicsBody?.applyImpulse(CGVector(dx: 4, dy: 4)) //puts ball into motion
+        }
         for touch in touches
         {
             let location = touch.location(in: self)
@@ -70,6 +75,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             removeChildren(in: nodes(at: (contact.bodyA.node?.position)!))
             starsBackground.removeFromParent()
             createBackground()
+            blockCount -= 1
         }
         else if contact.bodyB.node?.name == "brick"
         {
@@ -77,6 +83,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             //scotty & hussein
             starsBackground.removeFromParent()
             createBackground()
+            blockCount -= 1
         }
         else if contact.bodyA.node?.name == "loseZone" || contact.bodyB.node?.name == "loseZone"
         {
@@ -204,6 +211,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             {
                 makeBrick(xPoint: xPosition, yPoint: yPosition, brickWidth: blockWidth, brickHight: blockHight)
                 xPosition += (blockWidth + 10)
+                blockCount += 1
             }
             xPosition = screenEdge + blockEdge + 10
             yPosition += (blockHight + 10)
