@@ -18,6 +18,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var gameOverNode: SKLabelNode!
     var gameOverBackground: SKSpriteNode!
     var starsBackground: SKSpriteNode!
+    var livesNode: SKLabelNode!
     var lives = 3
     var blockCount = 0
     
@@ -30,6 +31,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         makeLoseZone()
         makeBall()
         creatBlocks()
+        makeLives()
         
 
 
@@ -46,12 +48,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         {
             let location = touch.location(in: self)
             paddle.position.x = location.x
-
-
-//                check to see if the touch is in the gameoverbackground.
-
             
         }
+// this should work to check if touch is in background but error pops up
+//        if lives == 0
+//        {
+//            for touch in touches
+//            {
+//                let location = touch.location(in: self)
+//                if gameOverBackground.contains(location) == true
+//                {
+//                    print("background clicked")
+//                }
+//                if gameOverNode.contains(location) == true
+//                {
+//                    print("background clicked")
+//                }
+//
+//            }
+//        }
         
         
         
@@ -66,6 +81,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             let location = touch.location(in: self)
             paddle.position.x = location.x
         }
+        
+        
+    
     }
     
     func didBegin(_ contact: SKPhysicsContact)
@@ -172,7 +190,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func lifeLost()
     {
+        ball.removeFromParent()
         lives -= 1
+        makeBall()
+        ball.physicsBody?.applyImpulse(CGVector(dx: 4 , dy: 4))
+        livesNode.removeFromParent()
+        makeLives()
     }
     
     func makeGameOver()
@@ -226,6 +249,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         brick.physicsBody = SKPhysicsBody(rectangleOf: brick.size)
         brick.physicsBody?.isDynamic = false
         addChild(brick)
+    }
+    
+    func makeLives()
+    {
+        livesNode = SKLabelNode(text: "Lives: ❤️❤️❤️")
+        livesNode.position = CGPoint(x: -100, y: frame.maxY - 50)
+        
+        if lives == 2
+        {
+            livesNode.text = "Lives: ❤️❤️"
+        }
+        else if lives == 1
+        {
+            livesNode.text = "Lives: ❤️"
+        }
+        addChild(livesNode)
     }
 }
 
