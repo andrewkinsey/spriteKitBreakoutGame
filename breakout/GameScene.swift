@@ -50,13 +50,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             paddle.position.x = location.x
             
         }
-// this should work to check if touch is in background but error pops up
-//        if lives == 0
-//        {
-//            for touch in touches
-//            {
-//                let location = touch.location(in: self)
-//                if gameOverBackground.contains(location) == true
+    
+        if lives == 0
+        {
+        
+                print("tap")
+                gameOverNode.removeFromParent()
+                gameOverBackground.color = UIColor.clear
+            //                let location = touch.location(in: self)
+//                if location.contains(gameOverBackground) == true
 //                {
 //                    print("background clicked")
 //                }
@@ -64,9 +66,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate
 //                {
 //                    print("background clicked")
 //                }
-//
-//            }
-//        }
+
+    
+        }
         
         
         
@@ -200,7 +202,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func makeGameOver()
     {
-        gameOverNode = SKLabelNode(fontNamed: "ArielMT")
+        gameOverNode = SKLabelNode(fontNamed: "ArialMT")
         gameOverNode.fontSize = 30
         gameOverNode.text = "Game Over"
         gameOverNode.zPosition = 15
