@@ -16,33 +16,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var paddle: SKSpriteNode!
     var brick: SKSpriteNode!
     var gameOverNode: SKLabelNode!
-    var gameOverBackground: SKSpriteNode!
     var starsBackground: SKSpriteNode!
+    var loseZone: SKSpriteNode!
     var livesNode: SKLabelNode!
+    var scoreNode: SKLabelNode!
+    var levelCompleteNode: SKLabelNode!
+    
     var lives = 3
     var blockCount = 0
+    var score = 0
+    var ballSpeed = 4
     
     override func didMove(to view: SKView)
     {
         physicsWorld.contactDelegate = self
         self.physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
-        createBackground()
-        makePaddle()
-        makeLoseZone()
-        makeBall()
-        creatBlocks()
-        makeLives()
-        
+        createGame()
 
-
-        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?)
     {
         if blockCount == 15
         {
-            ball.physicsBody?.applyImpulse(CGVector(dx: 4, dy: 4)) //puts ball into motion
+            ball.physicsBody?.applyImpulse(CGVector(dx: ballSpeed, dy: ballSpeed)) //puts ball into motion
         }
         for touch in touches
         {
@@ -50,27 +47,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             paddle.position.x = location.x
             
         }
-    
+        
+        //Game over reset
         if lives == 0
         {
-        
-                print("tap")
-                gameOverNode.removeFromParent()
-                gameOverBackground.color = UIColor.clear
-            //                let location = touch.location(in: self)
-//                if location.contains(gameOverBackground) == true
-//                {
-//                    print("background clicked")
-//                }
-//                if gameOverNode.contains(location) == true
-//                {
-//                    print("background clicked")
-//                }
-
-    
+            print("tap")
+            scene?.removeAllChildren()
+            lives = 3
+            score = 0
+            blockCount = 0
+            ballSpeed = 4
+            createGame()
         }
         
-        
+        //Level complete reset
+        if blockCount == 0
+        {
+            scene?.removeAllChildren()
+            ballSpeed += 1
+            blockCount = 0
+            createGame()
+        }
         
         
         
@@ -84,8 +81,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             paddle.position.x = location.x
         }
         
-        
-    
     }
     
     func didBegin(_ contact: SKPhysicsContact)
@@ -96,6 +91,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             starsBackground.removeFromParent()
             createBackground()
             blockCount -= 1
+            score += 10
+            scoreNode.removeFromParent()
+            makeScore()
+            checkForLevelComplete()
         }
         else if contact.bodyB.node?.name == "brick"
         {
@@ -104,6 +103,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             starsBackground.removeFromParent()
             createBackground()
             blockCount -= 1
+            score += 10
+            scoreNode.removeFromParent()
+            makeScore()
+            checkForLevelComplete()
         }
         else if contact.bodyA.node?.name == "loseZone" || contact.bodyB.node?.name == "loseZone"
         {
@@ -111,7 +114,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             lifeLost()
             if lives == 0
             {
-            resetGame()
+            makeGameOver()
             }
         }
     }
@@ -173,7 +176,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func makeLoseZone()
     {
-        let loseZone = SKSpriteNode(color: UIColor.black, size: CGSize(width: frame.width, height: 25))
+        loseZone = SKSpriteNode(color: UIColor.black, size: CGSize(width: frame.width, height: 25))
         loseZone.position = CGPoint(x: frame.midX, y: frame.minY + 25)
         loseZone.name = "loseZone"
         loseZone.physicsBody = SKPhysicsBody(rectangleOf: loseZone.size)
@@ -181,21 +184,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         addChild(loseZone)
     }
     
-    func resetGame()
-    {
-        ball.removeFromParent()
-        makeGameOver()
-        makeGameOverBackground()
-        makeBall()
-        
-    }
+    
     
     func lifeLost()
     {
         ball.removeFromParent()
         lives -= 1
         makeBall()
-        ball.physicsBody?.applyImpulse(CGVector(dx: 4 , dy: 4))
+        ball.physicsBody?.applyImpulse(CGVector(dx: ballSpeed , dy: ballSpeed))
         livesNode.removeFromParent()
         makeLives()
     }
@@ -206,17 +202,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         gameOverNode.fontSize = 30
         gameOverNode.text = "Game Over"
         gameOverNode.zPosition = 15
+        
+        ball.removeFromParent()
 
         addChild(gameOverNode)
     }
     
-    func makeGameOverBackground()
-    {
-        let gameOverBackground = SKSpriteNode(color: UIColor.red, size: CGSize(width: frame.width, height: frame.height))
-        gameOverBackground.zPosition = 10
-        
-        addChild(gameOverBackground)
-    }
+    
     
     func creatBlocks()
     {
@@ -266,7 +258,47 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         {
             livesNode.text = "Lives: ❤️"
         }
+        
         addChild(livesNode)
+    }
+    
+    func makeScore()
+    {
+        scoreNode = SKLabelNode(text: "Score: \(score)")
+        scoreNode.position = CGPoint(x: 100, y: frame.maxY - 50)
+        
+        addChild(scoreNode)
+    }
+    
+    func createGame()
+    {
+        createBackground()
+        makePaddle()
+        makeLoseZone()
+        makeBall()
+        creatBlocks()
+        makeLives()
+        makeScore()
+        
+    }
+    
+    func makeLevelCompleteNode()
+    {
+        levelCompleteNode = SKLabelNode(text: "Level Complete!")
+        levelCompleteNode.fontSize = 30
+        levelCompleteNode.zPosition = 15
+        
+        ball.removeFromParent()
+        
+        addChild(levelCompleteNode)
+    }
+    
+    func checkForLevelComplete()
+    {
+        if blockCount == 0
+        {
+            makeLevelCompleteNode()
+        }
     }
 }
 
